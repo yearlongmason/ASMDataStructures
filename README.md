@@ -1,10 +1,10 @@
 # Assembly Data Structures with Advent of Code
 
-This repository contains implementations of various data structures in **x64 MASM Assembly**, with an fun twist: using these data structures to solve puzzles from **Advent of Code**!
+This repository contains implementations of various data structures in x64 MASM Assembly, with an fun twist: using these data structures to solve puzzles from Advent of Code!
 
 ## Overview
 
-### Advent of Code Puzzles
+### Advent of Code
 
 Here are some specific puzzles I plan to solve in this project:
 - [**2021 Day 6: Lanternfish**](https://adventofcode.com/2021/day/6)
