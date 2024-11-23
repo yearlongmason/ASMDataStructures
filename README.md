@@ -1,4 +1,4 @@
-# ASM Data Structures and Advent of Code
+# Assembly Data Structures with Advent of Code
 
 This repository contains implementations of various data structures in **x64 MASM Assembly**, with an fun twist: using these data structures to solve puzzles from **Advent of Code**!
 
