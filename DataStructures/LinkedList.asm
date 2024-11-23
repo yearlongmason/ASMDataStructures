@@ -122,6 +122,10 @@ _deleteList PROC
 	sub rsp, 20h
 	lea rbp, [rsp + 20h]
 
+	; Clear lastNode
+	xor rax, rax
+	mov lastNode, rax
+
 	; Set current node values equal to values in the struct that was passed in
 	mov rsi, rcx
 	mov rcx, [rsi]
