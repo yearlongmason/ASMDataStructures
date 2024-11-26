@@ -170,6 +170,48 @@ _popStack ENDP
 
 
 ; Parameters: memory address of head node
+; data to be stored at new node
+; Returns: None
+_peekStack PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Set current node values equal to values in the struct that was passed in
+	mov rsi, rcx
+	mov rcx, [rsi]
+	mov currentNode.data, rcx
+	mov rcx, [rsi + 8]
+	mov currentNode.nextNode, rcx
+
+	; Skips over going to the next node
+	jmp skipNextNode
+
+	; This section sets the current node data equal to the next node data
+	nextNodeJmp:
+	mov rsi, currentNode.nextNode
+	mov rcx, [rsi]
+	mov currentNode.data, rcx
+	mov rcx, [rsi + 8]
+	mov currentNode.nextNode, rcx
+
+	skipNextNode:
+
+	; If the value of next node is 0 then there is no next node, so do not loop
+	cmp currentNode.nextNode, 0
+	jne nextNodeJmp
+
+	; Move data at the current (end) node into direct return register (rax)
+	mov rax, [rsi]
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return back to cpp main
+
+_peekStack ENDP
+
+
+; Parameters: memory address of head node
 ; Returns: None
 _deleteStack PROC
 	push rbp ; Push frame pointer onto the stack
@@ -186,6 +228,11 @@ _deleteStack PROC
 	mov currentNode.data, rcx
 	mov rcx, [rsi + 8]
 	mov currentNode.nextNode, rcx
+
+	; Clear head node
+	xor rax, rax
+	mov [rsi], rax
+	mov [rsi + 8], rax
 
 	; This section sets the current node data equal to the next node data
 	nextNodeJmp:
@@ -234,10 +281,13 @@ _asmMain PROC
 	; Print stack
 	lea rcx, head
 	call _printStack
+	call _printNewLine
 
 	; Pop data
 	lea rcx, head
 	call _popStack
+	mov rcx, rax ; Print out value just popped
+	call _printInt
 
 	; Print stack
 	call _printNewLine
@@ -252,6 +302,13 @@ _asmMain PROC
 	call _printNewLine
 	lea rcx, head
 	call _printStack
+
+	; Peek at the top of the stack
+	call _printNewLine
+	lea rcx, head
+	call _peekStack
+	mov rcx, rax
+	call _printInt
 
 	; Delete stack
 	lea rcx, head

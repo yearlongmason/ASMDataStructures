@@ -133,6 +133,11 @@ _deleteList PROC
 	mov rcx, [rsi + 8]
 	mov currentNode.nextNode, rcx
 
+	; Clear head node
+	xor rax, rax
+	mov [rsi], rax
+	mov [rsi + 8], rax
+
 	; This section sets the current node data equal to the next node data
 	nextNodeJmp:
 	mov rsi, currentNode.nextNode
