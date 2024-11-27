@@ -58,7 +58,7 @@ _printStack PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _printStack ENDP
 
@@ -112,7 +112,7 @@ _pushStack PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _pushStack ENDP
 
@@ -164,7 +164,7 @@ _popStack PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _popStack ENDP
 
@@ -206,7 +206,7 @@ _peekStack PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _peekStack ENDP
 
@@ -252,9 +252,13 @@ _deleteStack PROC
 	cmp currentNode.nextNode, 0
 	jne nextNodeJmp
 
+	; Finally, free last node
+	mov rcx, lastNode
+	call free
+
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _deleteStack ENDP
 
@@ -316,7 +320,7 @@ _asmMain PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to cpp main
+	ret ; return to where function was called
 
 _asmMain ENDP
 END

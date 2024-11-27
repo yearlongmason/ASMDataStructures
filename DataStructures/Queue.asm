@@ -69,7 +69,7 @@ _pushQueue PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to where function was called
+	ret ; return to where function was called
 
 _pushQueue ENDP
 
@@ -112,7 +112,7 @@ _printQueue PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to where function was called
+	ret ; return to where function was called
 
 _printQueue ENDP
 
@@ -164,7 +164,7 @@ _deleteQueue PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to where function was called
+	ret ; return to where function was called
 
 _deleteQueue ENDP
 
@@ -202,7 +202,7 @@ _asmMain PROC
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
-	ret ; return back to where function was called
+	ret ; return to where function was called
 
 _asmMain ENDP
 END
