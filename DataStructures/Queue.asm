@@ -16,6 +16,7 @@ head QueueNode <0, 0>
 currentNode QueueNode <0, 0>
 lastNode QWORD ? ; This will be used as a pointer to the previous node
 tempData QWORD ?
+headNodePtr QWORD ?
 
 .CODE
 
@@ -72,6 +73,45 @@ _pushQueue PROC
 	ret ; return to where function was called
 
 _pushQueue ENDP
+
+
+; Parameters: memory address of head node
+; Returns: Data at node that was just popped
+_popQueue PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Save off the head node pointer
+	mov headNodePtr, rcx
+
+	; Move to next node
+	mov rsi, rcx
+	mov rsi, [rsi + 8]
+
+	; Save off data and next node ptr in currentNode
+	mov rax, [rsi]
+	mov currentNode.data, rax
+	mov rax, [rsi + 8]
+	mov currentNode.nextNode, rax
+
+	; Delete current node (node being popped)
+	mov rcx, rsi
+	call free
+
+	; Set first node to the next node (currently being stored in currentNode.nextNode)
+	mov rsi, headNodePtr
+	mov rax, currentNode.nextNode
+	mov [rsi + 8], rax
+
+	; Return data stored at node just popped
+	mov rax, currentNode.data
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return to where function was called
+
+_popQueue ENDP
 
 
 ; Parameters: memory address of head node
@@ -191,6 +231,18 @@ _asmMain PROC
 	mov rdx, 3
 	call _pushQueue
 
+	; Print queue
+	lea rcx, head
+	call _printQueue
+	call _printNewLine
+
+	; Pop value
+	lea rcx, head
+	call _popQueue
+	mov rcx, rax
+	call _printInt
+	call _printNewLine
+	
 	; Print queue
 	lea rcx, head
 	call _printQueue
