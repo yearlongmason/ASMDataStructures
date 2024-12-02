@@ -7,25 +7,26 @@
 using namespace std;
 
 extern "C" void _partOne();
+extern "C" void _partTwo();
 extern "C" void _addNode(long long int, long long int);
 
 extern "C" double _getDouble() {
     double d;
-    std::cin >> d;
+    cin >> d;
     return d;
 }
 
 extern "C" void _printString(char* s) {
-    std::cout << s;
+    cout << s;
     return;
 }
 
 extern "C" void _printInt(int i) {
-    std::cout << i << " ";
+    cout << i << " ";
 }
 
 extern "C" void _printNewLine() {
-    std::cout << std::endl;
+    cout << std::endl;
 }
 
 extern "C" long long int _getData(long long int headNode) {
@@ -59,5 +60,6 @@ extern "C" long long int _getData(long long int headNode) {
 // main stub driver
 int main() {
     _partOne();
+    _partTwo();
     return 0;
 }

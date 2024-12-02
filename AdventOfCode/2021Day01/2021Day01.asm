@@ -19,9 +19,12 @@ currentNode LLNode <0, 0>
 numIncreases QWORD 0
 depthsLength QWORD ?
 loopCounter QWORD ?
+windowA QWORD ?
+windowB QWORD ?
 lastNode QWORD ? ; This will be used as a pointer to the previous node (used in _deleteList)
 tempData QWORD ?
 outputMessage BYTE "Answer for part 1: ",0
+outputMessageP2 BYTE "Answer for part 2: ",0
 
 .CODE
 
@@ -264,33 +267,25 @@ _partOne PROC
 	call _getData
 	mov depthsLength, rax
 	
-	; Loop through each index in depthsLength
+	; Loop through each index in depthsLength backwards!
 	mov rcx, depthsLength
 	dec rcx
 	depthLoop:
 		mov loopCounter, rcx ; Save loop counter
 		
-		; Get the current index
-		mov rax, depthsLength
-		sub rax, loopCounter ; rax now holds current index
-		
-		; Get value at current index
+		; Get value at current index - 1
 		lea rcx, depths
-		mov rdx, rax
+		mov rdx, loopCounter
 		dec rdx
 		call _getIndex
 		mov tempData, rax
-
-		; Get the current index
-		mov rax, depthsLength
-		sub rax, loopCounter ; rax now holds current index
 		
-		; Get value at next index
+		; Get value at current index
 		lea rcx, depths
-		mov rdx, rax
+		mov rdx, loopCounter
 		call _getIndex
 
-		; Add one to number of increases unless current index is greater than next index
+		; Add one to number of increases unless previous index is greater than current index
 		cmp tempData, rax
 		jg skipInc
 			inc numIncreases
@@ -315,4 +310,67 @@ _partOne PROC
 	ret ; return to where function was called
 
 _partOne ENDP
+
+
+_partTwo PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Clear numIncreases
+	xor rax, rax
+	mov numIncreases, rax
+
+	; Get data in the depths list
+	lea rcx, depths
+	call _getData
+	mov depthsLength, rax
+
+	; Clear loop counter
+	xor rax, rax
+	mov loopCounter, rax
+	; Loop through each index (this essentially simulates a loop)
+	nextIndex:
+	
+		; Get data at current index
+		lea rcx, depths
+		mov rdx, loopCounter
+		call _getIndex
+		mov tempData, rax
+
+		; Get data 3 indexes ahead
+		lea rcx, depths
+		mov rdx, loopCounter
+		add rdx, 3
+		call _getIndex
+
+		; Add one to number of increases unless previous index is greater than current index
+		cmp tempData, rax
+		jge skipInc
+			inc numIncreases
+		skipInc:
+
+		inc loopCounter
+
+		mov rax, depthsLength
+		sub rax, 3
+		cmp loopCounter, rax
+		jne nextIndex
+
+	; Output answer
+	lea rcx, outputMessageP2
+	call _printString
+	mov rcx, numIncreases
+	call _printInt
+	call _printNewLine
+
+	; Avoid memory leaks by deleting list
+	lea rcx, depths
+	call _deleteList
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return to where function was called
+
+_partTwo ENDP
 END
