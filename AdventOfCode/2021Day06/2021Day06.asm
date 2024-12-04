@@ -1,4 +1,4 @@
-; Queue.asm
+; 2021Day06.asm
 ; Mason Lee
 
 malloc PROTO
@@ -19,9 +19,10 @@ LLNode STRUCT
 LLNode ENDS
 
 allFish LLNode <0, 0> ; Keeps track of all fish
-fishCounts QueueNode <0, 0>
+fishQueue QueueNode <0, 0>
 currentNode LLNode <0, 0>
 loopCounter QWORD ?
+addressPlaceholder QWORD ?
 lastNode QWORD ? ; This will be used as a pointer to the previous node
 tempData QWORD ?
 headNodePtr QWORD ?
@@ -498,14 +499,38 @@ _partOne PROC
 	lea rcx, allFish
 	call _getFish
 
-	; Add 20 to index 3
-	lea rcx, allFish
-	mov rdx, 3
-	mov r8, 20
+	; Create fish queue
+	mov rcx, 9
+	addToQueue:
+	mov loopCounter, rcx ; Save off loop counter
+
+	; Add new node (starting at 0) to fishQueue
+	lea rcx, fishQueue
+	mov rdx, 0
+	call _pushQueue
+
+	mov rcx, loopCounter ; Restore loop counter
+	loop addToQueue
+
+	; Loop through all fish to get counts for fish queue
+	lea rsi, allFish
+	toNextNode:
+	mov rsi, [rsi + 8] ; Start at first node with data
+	mov addressPlaceholder, rsi ; Save rsi
+
+	lea rcx, fishQueue
+	mov rdx, [rsi]
+	mov r8, 1
 	call _addToIndex
-	
-	lea rcx, allFish
-	call _printList
+
+	mov rsi, addressPlaceholder ; Restore rsi
+	mov rax, [rsi + 8] ; Get the pointer to the next node
+	cmp rax, 0 ; if the next node is 0, then we made it to the end
+	jne toNextNode
+
+	; Print populated fish queue as a test
+	lea rcx, fishQueue
+	call _printQueue
 
 	; Delete list of fish to avoid memory leaks
 	lea rcx, allFish
