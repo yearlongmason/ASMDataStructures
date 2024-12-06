@@ -4,7 +4,9 @@
 malloc PROTO
 free PROTO
 _printInt PROTO
+_printLongLong PROTO
 _printNewLine PROTO ; Mostly for testing purposes
+_printString PROTO
 _getFish PROTO
 
 .DATA
@@ -22,10 +24,15 @@ allFish LLNode <0, 0> ; Keeps track of all fish
 fishQueue QueueNode <0, 0>
 currentNode LLNode <0, 0>
 loopCounter QWORD ?
+loopPlaceholder QWORD ?
 addressPlaceholder QWORD ?
+tempDayPassData QWORD ?
+dataStructureSum QWORD ?
 lastNode QWORD ? ; This will be used as a pointer to the previous node
 tempData QWORD ?
 headNodePtr QWORD ?
+numFishMessage BYTE "Number of lanternfish after ",0
+daysMessage BYTE "days: ",0
 
 .CODE
 
@@ -380,7 +387,7 @@ _printQueue PROC
 
 	; Print data at current index
 	mov rcx, currentNode.data
-	call _printInt
+	call _printLongLong
 
 	; If the value of next node is 0 then there is no next node, so do not loop
 	cmp currentNode.nextNode, 0
@@ -490,6 +497,85 @@ _addToIndex PROC
 _addToIndex ENDP
 
 
+; Parameters: memory address of head node
+; Returns: None
+_dayPass PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Pop 0th value and give the data from the popped value to rdx
+	mov addressPlaceholder, rcx
+	call _popQueue
+	mov tempDayPassData, rax
+
+	; Push value just popped off onto the queue
+	mov rcx, addressPlaceholder
+	mov rdx, tempDayPassData
+	call _pushQueue
+
+	; Add value just popped off to index 6 to restart fish internal counter
+	mov rcx, addressPlaceholder
+	mov rdx, 6
+	mov r8, tempDayPassData
+	call _addToIndex
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return to where function was called
+_dayPass ENDP
+
+
+; Parameters: memory address of head node
+; Returns: Sum of all values in the data structure
+_getSum PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Set current node values equal to values in the struct that was passed in
+	mov rsi, rcx
+	mov rcx, [rsi]
+	mov currentNode.data, rcx
+	mov rcx, [rsi + 8]
+	mov currentNode.nextNode, rcx
+
+	; Clear data structure sum
+	mov rax, 0
+	mov dataStructureSum, rax
+
+	; If the queue is empty just finish
+	cmp currentNode.nextNode, 0
+	je finishSum
+
+	; This section sets the current node data equal to the next node data
+	nextNodeJmp:
+	mov rsi, currentNode.nextNode
+	mov rcx, [rsi]
+	mov currentNode.data, rcx
+	mov rcx, [rsi + 8]
+	mov currentNode.nextNode, rcx
+
+	; add current data to sum
+	mov rcx, currentNode.data
+	add dataStructureSum, rcx
+
+	; If the value of next node is 0 then there is no next node, so do not loop
+	cmp currentNode.nextNode, 0
+	jne nextNodeJmp
+
+	finishSum:
+
+	; Return the sum of the data structure
+	mov rax, dataStructureSum
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return to where function was called
+
+_getSum ENDP
+
+
 _partOne PROC
 	push rbp ; Push frame pointer onto the stack
 	sub rsp, 20h
@@ -531,6 +617,37 @@ _partOne PROC
 	; Print populated fish queue as a test
 	lea rcx, fishQueue
 	call _printQueue
+	call _printNewLine
+
+	mov rcx, 80 ; Start loop counter with the number of days based on the question
+	dayPassLoop:
+	mov loopPlaceholder, rcx ; Save off rcx
+
+	lea rcx, fishQueue
+	call _dayPass
+
+	; Print queue at current day for testing purposes
+	;lea rcx, fishQueue
+	;call _printQueue
+	;call _printNewLine
+
+	mov rcx, loopPlaceholder ; Load back rcx
+	loop dayPassLoop
+
+	; Get the sum of the queue (all the fish)
+	lea rcx, fishQueue
+	call _getSum
+	mov tempData, rax
+
+	; Print out answer
+	lea rcx, numFishMessage
+	call _printString
+	mov rcx, 80
+	call _printInt
+	lea rcx, daysMessage
+	call _printString
+	mov rcx, tempData
+	call _printLongLong
 
 	; Delete list of fish to avoid memory leaks
 	lea rcx, allFish

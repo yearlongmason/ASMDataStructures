@@ -26,6 +26,10 @@ extern "C" void _printInt(int i) {
     cout << i << " ";
 }
 
+extern "C" void _printLongLong(long long int i) {
+    cout << i << " ";
+}
+
 extern "C" void _printNewLine() {
     cout << std::endl;
 }
