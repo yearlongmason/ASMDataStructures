@@ -615,9 +615,9 @@ _partOne PROC
 	jne toNextNode
 
 	; Print populated fish queue as a test
-	lea rcx, fishQueue
-	call _printQueue
-	call _printNewLine
+	;lea rcx, fishQueue
+	;call _printQueue
+	;call _printNewLine
 
 	mov rcx, 80 ; Start loop counter with the number of days based on the question
 	dayPassLoop:
@@ -648,14 +648,109 @@ _partOne PROC
 	call _printString
 	mov rcx, tempData
 	call _printLongLong
+	call _printNewLine
 
 	; Delete list of fish to avoid memory leaks
 	lea rcx, allFish
 	call _deleteList
+
+	; Delete fishQueue to avoid memory leaks
+	lea rcx, fishQueue
+	call _deleteQueue
 
 	lea rsp, [rbp]
 	pop rbp ; Pop frame pointer from the stack
 	ret ; return to where function was called
 
 _partOne ENDP
+
+
+_partTwo PROC
+	push rbp ; Push frame pointer onto the stack
+	sub rsp, 20h
+	lea rbp, [rsp + 20h]
+
+	; Get data from text file using C++ function
+	lea rcx, allFish
+	call _getFish
+
+	; Create fish queue
+	mov rcx, 9
+	addToQueue:
+	mov loopCounter, rcx ; Save off loop counter
+
+	; Add new node (starting at 0) to fishQueue
+	lea rcx, fishQueue
+	mov rdx, 0
+	call _pushQueue
+
+	mov rcx, loopCounter ; Restore loop counter
+	loop addToQueue
+
+	; Loop through all fish to get counts for fish queue
+	lea rsi, allFish
+	toNextNode:
+	mov rsi, [rsi + 8] ; Start at first node with data
+	mov addressPlaceholder, rsi ; Save rsi
+
+	; Add one to the correct fish index
+	lea rcx, fishQueue
+	mov rdx, [rsi]
+	mov r8, 1
+	call _addToIndex
+
+	mov rsi, addressPlaceholder ; Restore rsi
+	mov rax, [rsi + 8] ; Get the pointer to the next node
+	cmp rax, 0 ; if the next node is 0, then we made it to the end
+	jne toNextNode
+
+	; Print populated fish queue as a test
+	;lea rcx, fishQueue
+	;call _printQueue
+	;call _printNewLine
+
+	mov rcx, 256 ; Start loop counter with the number of days based on the question
+	dayPassLoop:
+	mov loopPlaceholder, rcx ; Save off rcx
+
+	lea rcx, fishQueue
+	call _dayPass
+
+	; Print queue at current day for testing purposes
+	;lea rcx, fishQueue
+	;call _printQueue
+	;call _printNewLine
+
+	mov rcx, loopPlaceholder ; Load back rcx
+	loop dayPassLoop
+
+	; Get the sum of the queue (all the fish)
+	lea rcx, fishQueue
+	call _getSum
+	mov tempData, rax
+
+	; Print out answer
+	lea rcx, numFishMessage
+	call _printString
+	mov rcx, 256
+	call _printInt
+	lea rcx, daysMessage
+	call _printString
+	mov rcx, tempData
+	call _printLongLong
+	call _printNewLine
+
+	; Delete list of fish to avoid memory leaks
+	lea rcx, allFish
+	call _deleteList
+
+	; Delete fishQueue to avoid memory leaks
+	lea rcx, fishQueue
+	call _deleteQueue
+
+	lea rsp, [rbp]
+	pop rbp ; Pop frame pointer from the stack
+	ret ; return to where function was called
+
+_partTwo ENDP
 END

@@ -8,7 +8,7 @@
 using namespace std;
 
 extern "C" void _partOne();
-//extern "C" void _partTwo();
+extern "C" void _partTwo();
 extern "C" void _addNode(long long int, long long int);
 
 extern "C" double _getDouble() {
@@ -68,6 +68,6 @@ extern "C" long long int _getFish(long long int headNode) {
 // main stub driver
 int main() {
     _partOne();
-    //_partTwo();
+    _partTwo();
     return 0;
 }
