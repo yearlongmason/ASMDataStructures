@@ -6,17 +6,16 @@ This repository contains implementations of various data structures in x64 MASM 
 
 ### Advent of Code
 
-Here are some specific puzzles I plan to solve in this project:
+Here are the specific puzzles I solve in this project:
+- [**2021 Day 1: Sonar Sweep**](https://adventofcode.com/2021/day/1)
 - [**2021 Day 6: Lanternfish**](https://adventofcode.com/2021/day/6)
-- [**2021 Day 10: Syntax Scoring**](https://adventofcode.com/2021/day/10)
-- [**2022 Day 5: Supply Stacks**](https://adventofcode.com/2022/day/5)
 
 For more information, visit the [Advent of Code](https://adventofcode.com/) website.
 
 ## Data Structures Implemented
 
-- **Linked Lists**
-- **Stacks**
-- **Queues**
+- **Linked List**
+- **Stack**
+- **Queue**
 
-Each data structure is implemented to work with dynamic memory allocation using the `malloc` and `free` functions. Pointer arithmetic is used to simulate structs representing each node in a data structure.
+Each data structure is implemented to work using dynamic memory allocation using the `malloc` and `free` functions. Pointer arithmetic is used to simulate structs representing each node in a data structure.
